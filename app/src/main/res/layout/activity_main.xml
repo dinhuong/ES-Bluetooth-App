@@ -94,23 +94,46 @@
         android:gravity="center_horizontal"
         />
 
-    <Button
-        android:id="@+id/bt_analysis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_below="@id/tv_volume"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:text="Analysis"
-        android:onClick="openAnalysis"/>
+<!--    <Button-->
+<!--        android:id="@+id/bt_analysis"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:layout_below="@id/tv_volume"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:text="Analysis"-->
+<!--        android:onClick="openAnalysis"/>-->
 
     <Button
+        android:id="@+id/bt_getpaired"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="get pair"
+        android:layout_below="@id/tv_volume"
+        android:onClick="getPairedDevice"
+        />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_below="@id/tv_volume"
+        android:layout_above="@id/lv_devices"
+        android:layout_toRightOf="@id/bt_getpaired"
+        android:layout_alignParentRight="true"
+        android:text="klsjgio"
+        android:gravity="center"
+    />
+
+    <ListView
+        android:id="@+id/lv_devices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="update"
-        android:layout_below="@id/bt_analysis"
-        android:onClick="update"
+        android:layout_below="@id/bt_getpaired"
+        android:padding="16dp"
         />
 
 </RelativeLayout>
