@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
@@ -14,6 +15,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.CompoundButtonCompat;
 
@@ -54,6 +56,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState != null) {
+            level = savedInstanceState.getFloat("level");
+            temperature = savedInstanceState.getFloat("temp");
+            tvTemp.setText("Temperature: " + temperature);
+        }
+        else {
+            tvTemp.setText("Temperature: ");
+
+        }
         tvTemp = findViewById(R.id.tv_temp);
         tvVolume = findViewById(R.id.tv_volume);
         tvLevel = findViewById(R.id.tv_level);
@@ -114,6 +125,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putFloat("temp", temperature);
+        outState.putFloat("level", level);
     }
 
     @Override
