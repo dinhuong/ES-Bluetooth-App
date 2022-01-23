@@ -108,9 +108,9 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="update"
+        android:text="get pair"
         android:layout_below="@id/bt_analysis"
-        android:onClick="update"
+        android:onClick="getPairedDevice"
         />
 
 </RelativeLayout>

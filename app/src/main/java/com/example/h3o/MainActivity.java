@@ -22,6 +22,9 @@ import com.gelitenight.waveview.library.WaveView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private int mBorderWidth = 10;
     private static float level=100f;
     private static float capacity = 500f;
+    private static float temperature=28f;
+    private static float volume=0f;
+
+    private String data="";
 
     private BluetoothAdapter adapter;
     private OutputStream outputStream;
@@ -121,11 +128,51 @@ public class MainActivity extends AppCompatActivity {
         mWaveHelper.start();
     }
 
-    public void update(View view) {
+    public void updateLevel(float level) {
         Log.d("TAG", "update: "+ String.valueOf(level));
-        level = 250f;
+        if (MainActivity.level > level) {
+            MainActivity.volume += (MainActivity.level - level);
+            tvVolume.setText("Volume of today: " + MainActivity.volume + "ml");
+        }
+        MainActivity.level = level;
         mWaveHelper.update(level);
+        tvLevel.setText(level + " ml");
     }
+
+    public void updateTemp(float temperature) {
+        MainActivity.temperature = temperature;
+        tvTemp.setText("Temperature: " + temperature + "C");
+    }
+
+    public void filter(String mess) {
+        // temperature: 27.37ￂﾰC  //20 chars
+        //Water remaining: 361.00 ml //24 chars
+        // 123,456
+//        data += mess;
+        String[] datumArr = mess.split(",", 0);
+        tvTemp.setText(mess);
+        float temp = Float.parseFloat(datumArr[0]);
+        updateTemp(temp);
+        float level = Float.parseFloat(datumArr[1]);
+        updateLevel(level);
+//        for (int i=0; i<datumArr.length; i++) {
+//            String datum = datumArr[i];
+//            if (datum.contains("temperature") && datum.contains("ￂﾰC")) {
+//                float temp = Float.parseFloat(datum.split(" ")[1]);
+//                if (Math.abs(MainActivity.temperature - temp) > 1) {
+//                    updateTemp(temp);
+//                }
+//            } else if (datum.contains("Water remaining") && datum.contains("ml")) {
+//                float level = Float.parseFloat(datum.split(" ")[1]);
+//                if (Math.abs(MainActivity.level - level) > 1) {
+//                    updateLevel(level);
+//                }
+//            } else {
+//                data = data.substring(i*48);
+//            }
+//        }
+    }
+
 
     public void openAnalysis(View view) {
         Intent intent = new Intent(this, AnalysisActivity.class);
@@ -180,6 +227,30 @@ public class MainActivity extends AppCompatActivity {
         return s;
     }
 
+    public String get_message(String text){
+        int num_pos = 0;
+        ArrayList<Integer> positions = new ArrayList<Integer>();
+        int position = text.indexOf("\n", 0);
+
+        while (position != -1) {
+            positions.add(position);
+            num_pos += 1;
+            position = text.indexOf("\n", position + 1);
+        }
+        String clean_message = "";
+        if (num_pos < 2){
+            return "";
+        }
+        int start_pos = positions.get(num_pos - 2) + 1;
+        int end_pos = positions.get(num_pos - 1) - 1;
+
+        for (int i = start_pos; i <= end_pos; i++) {
+            clean_message += text.charAt(i);
+        }
+        return clean_message;
+    }
+
+
     public void run() {
         final int BUFFER_SIZE = 1024;
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -192,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             // temperature: 27.37ￂﾰC
             //Water remaining: 361.00 ml
             //temperature: 29.81ￂﾰC
@@ -212,9 +284,22 @@ public class MainActivity extends AppCompatActivity {
             //Water remaining: 357.72 ml
             //temperature: 26.88ￂﾰC
             //Water remaining: 384.02 ml
-            String message = convert_to_string(buffer);
-            Log.d("byte_", "run: " + message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            String message = convert_to_string(buffer).trim();
+            data += message;
+
+            message = get_message(data);
+
+            if (message == ""){
+                continue;
+            }
+
+            Log.d("byte_", "run: " + data);
+//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            filter(message);
+            break;
+
+
+
         }
     }
 }
