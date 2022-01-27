@@ -39,10 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     private int mBorderColor;
     private int mBorderWidth = 10;
-    private static float level=100f;
-    private static float capacity = 500f;
-    private static float temperature=28f;
-    private static float volume=0f;
+    public static float level=100f;
+    public static float capacity = 500f;
+    public static float temperature=28f;
+    public static float volume=0f;
 
     private String data="";
 
@@ -163,34 +163,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void filter(String mess) {
-        // temperature: 27.37ￂﾰC  //20 chars
-        //Water remaining: 361.00 ml //24 chars
         // 123,456
-//        data += mess;
         String[] datumArr = mess.split(",", 0);
         tvTemp.setText(mess);
         float temp = Float.parseFloat(datumArr[0]);
         updateTemp(temp);
         float level = Float.parseFloat(datumArr[1]);
         updateLevel(level);
-//        for (int i=0; i<datumArr.length; i++) {
-//            String datum = datumArr[i];
-//            if (datum.contains("temperature") && datum.contains("ￂﾰC")) {
-//                float temp = Float.parseFloat(datum.split(" ")[1]);
-//                if (Math.abs(MainActivity.temperature - temp) > 1) {
-//                    updateTemp(temp);
-//                }
-//            } else if (datum.contains("Water remaining") && datum.contains("ml")) {
-//                float level = Float.parseFloat(datum.split(" ")[1]);
-//                if (Math.abs(MainActivity.level - level) > 1) {
-//                    updateLevel(level);
-//                }
-//            } else {
-//                data = data.substring(i*48);
-//            }
-//        }
     }
-
 
     public void openAnalysis(View view) {
         Intent intent = new Intent(this, AnalysisActivity.class);
@@ -200,16 +180,11 @@ public class MainActivity extends AppCompatActivity {
     public void getPairedDevice(View view) {
         if (adapter.isEnabled()) {
             Toast.makeText(this, "get paired", Toast.LENGTH_SHORT).show();
-//            Set<BluetoothDevice> devices = adapter.getBondedDevices();
-//            for (BluetoothDevice device : devices){
-//                //tvPaired.append(device.getName()+"/n");z
-//                Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
-//            }
+
             Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
             if (pairedDevices.size() > 0) {
                 Log.d("tag", "getPairedDevice: " + pairedDevices.toString());
-                //Toast.makeText(this, pairedDevices.size(), Toast.LENGTH_SHORT).show();
-                // There are paired devices. Get the name and address of each paired device.
+
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     Log.d("device", "getPairedDevice: " + device.getName());
@@ -217,18 +192,20 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
                     myBluetooth = (BluetoothDevice) device;
                     ParcelUuid[] uuids = device.getUuids();
-                    BluetoothSocket socket = null;
-                    try {
-                        socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+//                    BluetoothSocket socket = null;
+//                    try {
+//                        socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+//                        socket.connect();
+//                        outputStream = socket.getOutputStream();
+//                        inStream = socket.getInputStream();
+//                        run();
+//                        break;
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
 
-                        socket.connect();
-                        outputStream = socket.getOutputStream();
-                        inStream = socket.getInputStream();
-                        run();
-                        break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    new BluetoothAsyncTask(device, uuids[0].getUuid(), mWaveHelper, tvTemp, tvLevel, tvVolume).execute();
+                    break;
                 }
             }
         }
@@ -268,11 +245,9 @@ public class MainActivity extends AppCompatActivity {
         return clean_message;
     }
 
-
     public void run() {
         final int BUFFER_SIZE = 1024;
         byte[] buffer = new byte[BUFFER_SIZE];
-        int b = BUFFER_SIZE;
 
         while (true) {
             try {
@@ -282,26 +257,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            // temperature: 27.37ￂﾰC
-            //Water remaining: 361.00 ml
-            //temperature: 29.81ￂﾰC
-            //Water remaining: 384.02 ml
-            //temperature: 27.37ￂﾰC
-            //Water remaining: 364.29 ml
-            //temperature: 27.37ￂﾰC
-            //Water remaining: 367.58 ml
-            //temperature: 27.86ￂﾰC
-            //Water remaining: 361.00 ml
-            //temperature: 27.37ￂﾰC
-            //Water remaining: 384.02 ml
-            //temperature: 26.88ￂﾰC
-            //Water remaining: 361.00 ml
-            //temperature: 26.39ￂﾰC
-            //Water remaining: 357.72 ml
-            //temperature: 25.42ￂﾰC
-            //Water remaining: 357.72 ml
-            //temperature: 26.88ￂﾰC
-            //Water remaining: 384.02 ml
             String message = convert_to_string(buffer).trim();
             data += message;
 
@@ -315,9 +270,6 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             filter(message);
             break;
-
-
-
         }
     }
 }
