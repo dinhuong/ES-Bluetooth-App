@@ -29,6 +29,7 @@ import com.gelitenight.waveview.library.WaveView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", "update: "+ String.valueOf(level));
         if (MainActivity.level > level) {
             MainActivity.volume += (MainActivity.level - level);
+            MainActivity.volume = Math.round(MainActivity.volume);
             tvVolume.setText("Volume of today: " + MainActivity.volume + "ml");
         }
         MainActivity.level = level;
@@ -159,26 +161,17 @@ public class MainActivity extends AppCompatActivity {
         tvTemp.setText("Temperature: " + temperature + "C");
     }
 
-    public void filter() {
-        // temperature: 27.37ￂﾰC  //20 chars
-        //Water remaining: 361.00 ml //24 chars
+    public void filter(String message) {
+        // message = "a,b"
 
-        String[] datumArr = data.split("\r\n", 0);
-        for (int i=0; i<datumArr.length; i++) {
-            String datum = datumArr[i];
-            if (datum.contains("temperature") && datum.contains("ￂﾰC")) {
-                float temp = Float.parseFloat(datum.split(" ")[1]);
-                if (Math.abs(MainActivity.temperature - temp) > 1) {
-                    updateTemp(temp);
-                }
-            } else if (datum.contains("Water remaining") && datum.contains("ml")) {
-                float level = Float.parseFloat(datum.split(" ")[1]);
-                if (Math.abs(MainActivity.level - level) > 1) {
-                    updateLevel(level);
-                }
-            } else {
-                data = data.substring(i*48);
-            }
+        String[] datumArr = message.split(",", 0);
+        float temp = Float.parseFloat(datumArr[0]);
+        if (Math.abs(MainActivity.temperature - temp) > 1) {
+            updateTemp(temp);
+        }
+        float level = Float.parseFloat(datumArr[1]);
+        if (Math.abs(MainActivity.level - level) > 1) {
+            updateLevel(level);
         }
     }
 
@@ -194,29 +187,30 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText("Listening");
         }
         tvStatus.setText("connecting");
-            Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
-            String[] devicesName = new String[pairedDevices.size()];
-            int index=0;
+        Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
+        String[] devicesName = new String[pairedDevices.size()];
+        bluetoothDevices = new BluetoothDevice[10];
+        int index=0;
 
-            if (pairedDevices.size() > 0) {
-                for (BluetoothDevice device : pairedDevices) {
-                    bluetoothDevices[index] = device;
-                    devicesName[index]=device.getName();
-                    index++;
-                }
-                ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,devicesName);
-                lvDevices.setAdapter(arrayAdapter);
-
-                lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        ClientClass clientClass = new ClientClass(bluetoothDevices[i], bluetoothDevices[i].getUuids()[0].getUuid());
-                        clientClass.start();
-
-                        tvStatus.setText("Connecting");
-                    }
-                });
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                bluetoothDevices[index] = device;
+                devicesName[index]=device.getName();
+                index++;
             }
+            ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,devicesName);
+            lvDevices.setAdapter(arrayAdapter);
+
+            lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    ClientClass clientClass = new ClientClass(bluetoothDevices[i], bluetoothDevices[i].getUuids()[0].getUuid());
+                    clientClass.start();
+
+                    tvStatus.setText("Connecting");
+                }
+            });
+        }
 
 //        if (adapter.isEnabled()) {
 //            Toast.makeText(this, "get paired", Toast.LENGTH_SHORT).show();
@@ -261,10 +255,8 @@ public class MainActivity extends AppCompatActivity {
                     tvStatus.setText("Connection Failed");
                     break;
                 case STATE_MESSAGE_RECEIVED:
-                    byte[] buffer= (byte[]) msg.obj;
-                    String tempMsg=new String(buffer,0,msg.arg1);
-                    data += tempMsg;
-                    filter();
+                    String message = (String) msg.obj;
+                    filter(message);
                     break;
             }
             return true;
@@ -328,14 +320,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void run() {
-            final int BUFFER_SIZE = 1024;
+            final int BUFFER_SIZE = 2048;
             byte[] buffer = new byte[BUFFER_SIZE];
             int bytes = 0;
-
+            StringBuilder readMessage = new StringBuilder();
             while (true) {
                 try {
                     bytes = inputStream.read(buffer);
-                    handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, buffer).sendToTarget();
+
+                    String read = new String(buffer, 0, bytes);
+                    readMessage.append(read);
+
+                    if (read.contains("\n")) {
+
+                        handler.obtainMessage(STATE_MESSAGE_RECEIVED, bytes, -1, readMessage.toString().replace("\n", "")).sendToTarget();
+                        readMessage.setLength(0);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

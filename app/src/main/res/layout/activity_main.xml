@@ -109,30 +109,49 @@
         android:id="@+id/bt_getpaired"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="get pair"
         android:layout_below="@id/tv_volume"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="#1567B1"
+        android:gravity="center_horizontal"
+        android:onClick="openAnalysis"
+        android:text="Analysis" />
+
+    <Button
+        android:id="@+id/bt_get_paired"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_analysis"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="#1567B1"
+        android:gravity="center_horizontal"
         android:onClick="getPairedDevice"
-        />
+        android:layout_margin="16dp"
+        android:text="get pair" />
 
     <TextView
         android:id="@+id/tv_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:layout_below="@id/tv_volume"
         android:layout_above="@id/lv_devices"
-        android:layout_toRightOf="@id/bt_getpaired"
+        android:layout_toRightOf="@id/bt_get_paired"
         android:layout_alignParentRight="true"
-        android:text="klsjgio"
-        android:gravity="center"
-    />
+        android:text=""
+        android:gravity="center" />
 
     <ListView
         android:id="@+id/lv_devices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bt_getpaired"
+        android:layout_below="@id/bt_get_paired"
         android:padding="16dp"
         />
 
