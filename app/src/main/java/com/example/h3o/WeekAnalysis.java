@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -36,19 +37,22 @@ public class WeekAnalysis extends AppCompatActivity {
 
         lineChart = findViewById(R.id.activity_main_linechart);
 
-        entryList.add(new Entry(1, 120));
-        entryList.add(new Entry(2, 220));
-        entryList.add(new Entry(3, 311));
-        entryList.add(new Entry(4, 514));
-        entryList.add(new Entry(5, 620));
-        entryList.add(new Entry(6, 910));
-        entryList.add(new Entry(7, 1131));
+        entryList.add(new Entry(1, 620));
+        entryList.add(new Entry(2, 720));
+        entryList.add(new Entry(3, 277));
+        entryList.add(new Entry(4, 444));
+        entryList.add(new Entry(5, 822));
+        entryList.add(new Entry(6, 177));
+        entryList.add(new Entry(7, 221));
+        entryList.add(new Entry(8, 315));
+        entryList.add(new Entry(9, 729));
         LineDataSet lineDataSet = new LineDataSet(entryList, "water consumption (ml)");
-        lineDataSet.setColors(ColorTemplate.JOYFUL_COLORS);
+        // set blue line
+        lineDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
         lineDataSet.setFillAlpha(150);
         lineData = new LineData(lineDataSet);
         lineChart.setData(lineData);
-        lineChart.setVisibleXRangeMaximum(5000);
+        lineChart.setVisibleYRange(0, 1200, YAxis.AxisDependency.LEFT);
         lineChart.invalidate();
     }
 }
