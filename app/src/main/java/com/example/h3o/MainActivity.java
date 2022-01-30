@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tvTemp = findViewById(R.id.tv_temp);
         if (savedInstanceState != null) {
             level = savedInstanceState.getFloat("level");
             temperature = savedInstanceState.getFloat("temp");
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             tvTemp.setText("Temperature: ");
 
         }
-        tvTemp = findViewById(R.id.tv_temp);
         tvVolume = findViewById(R.id.tv_volume);
         tvLevel = findViewById(R.id.tv_level);
 
