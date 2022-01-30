@@ -94,19 +94,8 @@
         android:gravity="center_horizontal"
         />
 
-<!--    <Button-->
-<!--        android:id="@+id/bt_analysis"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:layout_below="@id/tv_volume"-->
-<!--        android:layout_centerInParent="true"-->
-<!--        android:gravity="center_horizontal"-->
-<!--        android:text="Analysis"-->
-<!--        android:onClick="openAnalysis"/>-->
-
     <Button
-        android:id="@+id/bt_getpaired"
+        android:id="@+id/bt_analysis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_volume"
