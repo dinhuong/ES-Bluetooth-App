@@ -319,20 +319,11 @@ public class MainActivity extends AppCompatActivity {
             outputStream=tempOut;
         }
 
-        public String convert_to_string(byte[] buffer){
-            String s = "";
-            for (byte _byte: buffer){
-                s = s + (char) _byte;
-            }
-            return s;
-        }
-
         public void run() {
             final int BUFFER_SIZE = 2048;
             byte[] buffer = new byte[BUFFER_SIZE];
             int bytes = 0;
             StringBuilder readMessage = new StringBuilder();
-
             while (true) {
                 try {
                     bytes = inputStream.read(buffer);
