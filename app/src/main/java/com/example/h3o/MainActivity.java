@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         tvTemp = findViewById(R.id.tv_temp);
         tvVolume = findViewById(R.id.tv_volume);
         tvLevel = findViewById(R.id.tv_level);
-        tvStatus = findViewById(R.id.tv_status);
+//        tvStatus = findViewById(R.id.tv_status);
         lvDevices = findViewById(R.id.lv_devices);
 
         adapter = BluetoothAdapter.getDefaultAdapter();
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openAnalysis(View view) {
-        Intent intent = new Intent(this, AnalysisActivity.class);
+        Intent intent = new Intent(this, WeekAnalysis.class);
         startActivity(intent);
     }
 
@@ -184,9 +184,11 @@ public class MainActivity extends AppCompatActivity {
         if(!adapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
-            tvStatus.setText("Listening");
+//            tvStatus.setText("Listening");
+            Toast.makeText(this, "Listening", Toast.LENGTH_SHORT).show();
         }
-        tvStatus.setText("connecting");
+//        tvStatus.setText("connecting");
+        Toast.makeText(this, "Connecting", Toast.LENGTH_SHORT).show();
         Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
         String[] devicesName = new String[pairedDevices.size()];
         bluetoothDevices = new BluetoothDevice[10];
@@ -207,7 +209,8 @@ public class MainActivity extends AppCompatActivity {
                     ClientClass clientClass = new ClientClass(bluetoothDevices[i], bluetoothDevices[i].getUuids()[0].getUuid());
                     clientClass.start();
 
-                    tvStatus.setText("Connecting");
+//                    tvStatus.setText("Connecting");
+                    Toast.makeText(MainActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -243,16 +246,20 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what)
             {
                 case STATE_LISTENING:
-                    tvStatus.setText("Listening");
+//                    tvStatus.setText("Listening");
+                    Toast.makeText(MainActivity.this, "Listening", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTING:
-                    tvStatus.setText("Connecting");
+//                    tvStatus.setText("Connecting");
+                    Toast.makeText(MainActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTED:
-                    tvStatus.setText("Connected");
+//                    tvStatus.setText("Connected");
+                    Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTION_FAILED:
-                    tvStatus.setText("Connection Failed");
+//                    tvStatus.setText("Connection Failed");
+                    Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_MESSAGE_RECEIVED:
                     String message = (String) msg.obj;
