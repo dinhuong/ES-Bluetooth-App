@@ -47,20 +47,28 @@
             android:text="@string/blue"/>
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/tv_noti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I'm thirsty! Please fill with water!"
+        android:textColor="@color/red"
+        android:layout_below="@id/colorChoice"
+        android:gravity="center_horizontal"
+        android:layout_margin="8dp"
+        />
     <RelativeLayout
         android:id="@+id/rl_wave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/colorChoice"
-        android:layout_marginTop="32dp"
+        android:layout_below="@id/tv_noti"
         android:layout_marginBottom="32dp"
         android:layout_centerHorizontal="true">
 
         <com.gelitenight.waveview.library.WaveView
             android:id="@+id/wave"
             android:layout_width="300dp"
-            android:layout_height="300dp"
-            />
+            android:layout_height="300dp" />
 
         <TextView
             android:id="@+id/tv_level"

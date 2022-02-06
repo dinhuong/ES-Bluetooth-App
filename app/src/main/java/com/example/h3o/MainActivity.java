@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelUuid;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +22,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.CompoundButtonCompat;
 
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvLevel;
     private TextView tvTemp;
     private TextView tvVolume;
-    private TextView tvStatus;
+    private TextView tvNoti;
     private ListView lvDevices;
 
     private int mBorderColor;
@@ -71,9 +73,18 @@ public class MainActivity extends AppCompatActivity {
         tvTemp = findViewById(R.id.tv_temp);
         tvVolume = findViewById(R.id.tv_volume);
         tvLevel = findViewById(R.id.tv_level);
-//        tvStatus = findViewById(R.id.tv_status);
+        tvNoti = findViewById(R.id.tv_noti);
         lvDevices = findViewById(R.id.lv_devices);
 
+        if (savedInstanceState != null) {
+            level = savedInstanceState.getFloat("level");
+            temperature = savedInstanceState.getFloat("temp");
+            tvTemp.setText("Temperature: " + temperature);
+        }
+
+        if (level >50) {
+            tvNoti.setVisibility(View.INVISIBLE);
+        }
         adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter == null) {
             Toast.makeText(this, "bluetooth is not available", Toast.LENGTH_SHORT).show();
@@ -131,6 +142,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putFloat("temp", temperature);
+        outState.putFloat("level", level);
+    }
 
     @Override
     protected void onPause() {
@@ -154,6 +171,11 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.level = Math.max(0, level);
             mWaveHelper.update(level);
             tvLevel.setText(level + " ml");
+            if (MainActivity.level > 50) {
+                tvNoti.setVisibility(View.INVISIBLE);
+            } else {
+                tvNoti.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -185,10 +207,8 @@ public class MainActivity extends AppCompatActivity {
         if(!adapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
-//            tvStatus.setText("Listening");
             Toast.makeText(this, "Listening", Toast.LENGTH_SHORT).show();
         }
-//        tvStatus.setText("connecting");
         Toast.makeText(this, "Connecting", Toast.LENGTH_SHORT).show();
         Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
         String[] devicesName = new String[pairedDevices.size()];
@@ -210,34 +230,10 @@ public class MainActivity extends AppCompatActivity {
                     ClientClass clientClass = new ClientClass(bluetoothDevices[i], bluetoothDevices[i].getUuids()[0].getUuid());
                     clientClass.start();
 
-//                    tvStatus.setText("Connecting");
                     Toast.makeText(MainActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
                 }
             });
         }
-
-//        if (adapter.isEnabled()) {
-//            Toast.makeText(this, "get paired", Toast.LENGTH_SHORT).show();
-//
-//            Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
-//            if (pairedDevices.size() > 0) {
-//                Log.d("tag", "getPairedDevice: " + pairedDevices.toString());
-//
-//                for (BluetoothDevice device : pairedDevices) {
-//                    String deviceName = device.getName();
-//                    Log.d("device", "getPairedDevice: " + device.getName());
-//                    String deviceHardwareAddress = device.getAddress(); // MAC address
-//                    Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
-//
-//                    myBluetooth = (BluetoothDevice) device;
-//                    ParcelUuid[] uuids = device.getUuids();
-//
-//                    ClientClass client = new ClientClass(myBluetooth, uuids[0].getUuid());
-//                    client.start();
-//
-//                }
-//            }
-//        }
     }
 
     Handler handler = new Handler(new Handler.Callback() {
@@ -247,19 +243,15 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what)
             {
                 case STATE_LISTENING:
-//                    tvStatus.setText("Listening");
                     Toast.makeText(MainActivity.this, "Listening", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTING:
-//                    tvStatus.setText("Connecting");
                     Toast.makeText(MainActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTED:
-//                    tvStatus.setText("Connected");
                     Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_CONNECTION_FAILED:
-//                    tvStatus.setText("Connection Failed");
                     Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
                     break;
                 case STATE_MESSAGE_RECEIVED:
