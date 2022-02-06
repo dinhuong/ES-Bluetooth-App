@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int mBorderColor;
     private int mBorderWidth = 10;
-    private static float level=100f;
+    private static float level=0f;
     private static float capacity = 500f;
     private static float volume=0f;
     private static float temperature=28f;
@@ -146,14 +146,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateLevel(float level) {
         Log.d("TAG", "update: "+ String.valueOf(level));
-        if (MainActivity.level > level) {
+        if (Math.abs(MainActivity.level - level) > 50) {
             MainActivity.volume += (MainActivity.level - level);
             MainActivity.volume = Math.round(MainActivity.volume);
+            MainActivity.volume = Math.max(0, MainActivity.volume);
             tvVolume.setText("Volume of today: " + MainActivity.volume + "ml");
+            MainActivity.level = Math.max(0, level);
+            mWaveHelper.update(level);
+            tvLevel.setText(level + " ml");
         }
-        MainActivity.level = level;
-        mWaveHelper.update(level);
-        tvLevel.setText(level + " ml");
     }
 
     public void updateTemp(float temperature) {
